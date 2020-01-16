@@ -1,0 +1,29 @@
+---
+title: "R Notebook Individual Assignment"
+output: html_notebook
+---
+
+```{r}
+library('tidyverse')
+```
+
+```{r}
+indo_data <- read_csv('conflict_data_indo.csv')
+```
+
+```{r}
+# Count the total number of fatalities and get the average number of fatalities per day 
+indo_data_fatalities <- indo_data %>%
+  group_by(conflict_name) %>%
+  summarize(total_fatalities = sum(best)) %>%
+  mutate(average_fatalities_day = total_fatalities/365)
+```
+
+
+```{r}
+ggplot(data = indo_data_fatalities) +
+  geom_col(mapping = aes(x = conflict_name, y = total_fatalities))
+```
+
+
+
