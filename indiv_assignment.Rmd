@@ -5,25 +5,67 @@ output: html_notebook
 
 ```{r}
 library('tidyverse')
-```
-
-```{r}
 indo_data <- read_csv('conflict_data_indo.csv')
 ```
 
 ```{r}
 # Count the total number of fatalities and get the average number of fatalities per day 
 indo_data_fatalities <- indo_data %>%
-  group_by(conflict_name) %>%
   summarize(total_fatalities = sum(best)) %>%
   mutate(average_fatalities_day = total_fatalities/365)
 ```
 
 
 ```{r}
-ggplot(data = indo_data_fatalities) +
-  geom_col(mapping = aes(x = conflict_name, y = total_fatalities))
+# Count the fatalities for each conflict 
+indo_data_conlict <- indo_data %>%
+  mutate(
+    new_conflict_names = conflict_name,
+    new_conflict_names = ifelse(conflict_name=='Christians (Indonesia) - Muslims (Indonesia)', 'Christians - Muslims', new_conflict_names), 
+    new_conflict_names = ifelse(conflict_name == 'Indonesia:Aceh', 'Aceh', new_conflict_names),
+    new_conflict_names = ifelse(conflict_name == 'Government of Indonesia - Civilians', 'Gov. - Civilians', new_conflict_names), 
+    new_conflict_names = ifelse(conflict_name == 'Jemaah Islamiya - Civilians', 'Jemaah Islamiya \n Civilians', new_conflict_names)) %>%
+  group_by(new_conflict_names) %>%
+  summarize(total_fatalities = sum(best)) 
 ```
+
+
+```{r}
+# Plot the fatalities for each conflict 
+ggplot(data = indo_data_conlict) +
+  geom_col(mapping = aes(x = new_conflict_names, y = total_fatalities)) + 
+  xlab('Number of fatalities') +
+  ylab('Name of the conflict') +
+  ggtitle('Number of fatalities for different conclicts in Indonesia in 2004') +
+  theme(axis.text.x = element_text(angle=-30))
+```
+
+
+
+```{r}
+indonesia_data <- read_csv('conflict_indonesia.csv') %>%
+  mutate(best_dbl = as.numeric(best))
+```
+```{r}
+# Count the fatalities for each year 
+indonesia_year <- indonesia_data %>%
+  group_by(year) %>%
+  summarize(total_fatalities = sum(best_dbl))
+```
+
+```{r}
+# Plot the fatalities for each year 
+ggplot(data = indonesia_year) +
+  geom_col(mapping = aes(x = year, y = total_fatalities)) + 
+  xlab('Year') +
+  ylab('Number of fatalities ') +
+  ggtitle('Number of fatalities for years between 1989 to 2015')
+```
+
+
+
+
+
 
 
 
